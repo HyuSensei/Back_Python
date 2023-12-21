@@ -109,3 +109,13 @@ def getUpdateOrder(user_id:int,order_id:int):
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
 
+@router.get("/api/v1/cancelCheckOut")
+def cancelCheckOut():
+    try:
+        data_order= OrderController.handleCancelCheckOut()
+        return data_order
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+

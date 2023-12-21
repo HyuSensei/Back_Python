@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from database import SessionLocal
 import models 
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, desc
 
 def addOrder(data_order):
     db= SessionLocal()
@@ -19,37 +19,77 @@ def addOrder(data_order):
         raise HTTPException(
             status_code= status.HTTP_400_BAD_REQUEST, detail="Vui lòng chọn phương thức thanh toán !"
         )
-    if data_user["method"]=="ordervnpay":
-        raise HTTPException(
-            status_code= status.HTTP_400_BAD_REQUEST, detail="Hiện tại website SkinLeLe chưa hỗ trợ thanh toán VNPAY !"
+    if data_user["method"]=="off":
+        total=0
+        for i in range(len(data_cart)):
+            total = data_cart[i]["price"] * data_cart[i]["quantity"]
+        order_info = models.Order(
+        payment="Thanh toán khi nhận hàng",
+        status=0,
+        name=data_user["name"],
+        address=data_user["address"],
+        phone=data_user["phone"],
+        total=total,
+        user_id=data_user["user_id"]
         )
-    total=0
-    for i in range(len(data_cart)):
-        total = data_cart[i]["price"] * data_cart[i]["quantity"]
-    order_info = models.Order(
-    payment="Thanh toán khi nhận hàng!",
-    status=0,
-    name=data_user["name"],
-    address=data_user["address"],
-    phone=data_user["phone"],
-    total=total,
-    user_id=data_user["user_id"]
-    )
-    db.add(order_info)
+        db.add(order_info)
+        db.commit()
+        max_id_order = db.query(func.max(models.Order.id)).scalar()
+        for i in range(len(data_cart)):
+            order_product= models.OrderProduct(
+            order_id= max_id_order,
+            product_id= data_cart[i]["id"],
+            quantity= data_cart[i]["quantity"]
+        )
+        db.add(order_product)
+        db.commit()
+        return {
+            "success": True,
+            "message": "Đặt hàng thành công !",
+        }
+    if data_user["method"]=="onl":
+        total=0
+        for i in range(len(data_cart)):
+            total = data_cart[i]["price"] * data_cart[i]["quantity"]
+        order_info = models.Order(
+        payment="Thanh toán paypal",
+        status=0,
+        name=data_user["name"],
+        address=data_user["address"],
+        phone=data_user["phone"],
+        total=total,
+        user_id=data_user["user_id"]
+        )
+        db.add(order_info)
+        db.commit()
+        max_id_order = db.query(func.max(models.Order.id)).scalar()
+        for i in range(len(data_cart)):
+            order_product= models.OrderProduct(
+            order_id= max_id_order,
+            product_id= data_cart[i]["id"],
+            quantity= data_cart[i]["quantity"]
+        )
+        db.add(order_product)
+        db.commit()
+        return {
+            "success": True,
+            "message": "Đặt hàng thành công !",
+        }
+        
+def handleCancelCheckOut():
+    db = SessionLocal()
+    latest_order = (
+            db.query(models.Order)
+            .order_by(desc(models.Order.id))
+            .first()
+        )
+    db.query(models.OrderProduct).filter(models.OrderProduct.order_id == latest_order.id).delete()
+    db.delete(latest_order)
     db.commit()
-    max_id_order = db.query(func.max(models.Order.id)).scalar()
-    for i in range(len(data_cart)):
-       order_product= models.OrderProduct(
-           order_id= max_id_order,
-           product_id= data_cart[i]["id"],
-           quantity= data_cart[i]["quantity"]
-       )
-       db.add(order_product)
-       db.commit()
     return {
-        "success": True,
-        "message": "Đặt hàng thành công !",
-    }
+        "success": False,
+        "message": "Hủy thanh toán thành công !"
+        }
 
 def handleOrderConfirm(user):
     db=SessionLocal()

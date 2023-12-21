@@ -110,6 +110,10 @@ def loginUser(user):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,detail="Tên đăng nhập không tồn tại vui lòng thử lại !"
         )
+    if get_user.role_id==2:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,detail="Vui lòng đăng nhập tài khoản khác !"
+        )
     check_password= checkPassword(user.password,get_user.password)
     if check_password==False:
         raise HTTPException(

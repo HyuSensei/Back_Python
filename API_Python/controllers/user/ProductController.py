@@ -45,31 +45,35 @@ def handleGetProductSale():
 
 def handleGetProductOrderTop():
     db = SessionLocal()
-    products = (
-    db.query(models.Product, func.count(models.OrderProduct.product_id))
-    .join(models.OrderProduct)
-    .join(models.Order)
-    .filter(models.Order.status == 2)
-    .group_by(models.Product.id)
-    .having(func.count(models.OrderProduct.product_id) >= 2)
-    .all()
+    order_products = (
+        db.query(
+                models.OrderProduct.product_id,
+                func.sum(models.OrderProduct.quantity).label("total_quantity")
+            )
+            .join(models.Order, models.Order.id == models.OrderProduct.order_id)
+            .filter(models.Order.status == 2)
+            .group_by(models.OrderProduct.product_id)
     )
     product_list=[]
-    for product, order_count  in products:
-        get_product={
-            "id":product.id,
-            "price": product.price,
-            "quantity": product.quantity,
-            "sale": product.sale,
-            "expiry": product.expiry,
-            "image": product.image,
-            "name": product.name,
-            "description": product.description,
-            "category_id": product.category_id,
-            "manufacture": product.manufacture,
-            "sold":order_count
+    for item in order_products:
+        product_id = int(item.product_id)
+        total_quantity = int(item.total_quantity)
+
+        product_result = db.query(models.Product).filter(models.Product.id == product_id).first()
+        product_data = {
+            "id":product_result.id,
+            "price": product_result.price,
+            "quantity": product_result.quantity,
+            "sale": product_result.sale,
+            "expiry": product_result.expiry,
+            "image": product_result.image,
+            "name": product_result.name,
+            "description": product_result.description,
+            "category_id": product_result.category_id,
+            "manufacture": product_result.manufacture,
+            "sold":total_quantity
         }
-        product_list.append(get_product)
+        product_list.append(product_data)
     return {
         "success": True,
         "products": product_list

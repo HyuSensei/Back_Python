@@ -32,10 +32,11 @@ class Product(Base):
     price= Column(Float)
     description= Column(String(250))
     quantity= Column(Integer)
-    category_id= Column(Integer,ForeignKey('categories.id'))
     sale=Column(Integer)
     manufacture=Column(DateTime)
     expiry=Column(Float)
+    category_id= Column(Integer,ForeignKey('categories.id'))
+    brand_id= Column(Integer,ForeignKey('brands.id'))
     order_product = relationship("OrderProduct", backref=backref("products", cascade="delete"))
     rate = relationship("Rate", backref=backref("products", cascade="delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
@@ -88,6 +89,13 @@ class Rate(Base):
 
 class CategoryParent(Base):
     __tablename__ ='category_parents'
+    id= Column(Integer, primary_key=True, index=True)
+    name= Column(String(250))
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
+
+class Brand(Base):
+    __tablename__ ='brands'
     id= Column(Integer, primary_key=True, index=True)
     name= Column(String(250))
     createdAt = Column(DateTime, default=datetime.utcnow)
