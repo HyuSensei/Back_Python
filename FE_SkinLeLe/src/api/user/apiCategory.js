@@ -51,7 +51,17 @@ const getCategoryMakeUp = async (req, res) => {
   }
 };
 
+const getCategory = async (req, res) => {
+  try {
+    const categories = await axios.get(process.env.BASE_URL + `categories`);
+    return categories.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getCategoryMakeUp,
   getCategorySkinCare,
+  getCategory,
 };

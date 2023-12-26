@@ -32,13 +32,19 @@
 
                                     <div class="card-header py-3"
                                         style="text-align: center; display: flex; align-items: center;">
+                                        <select class="form-control" aria-label=".form-select-lg example"
+                                            style="width: 20%;" id="selectprd" onchange="redirectToUrl(this)">
+                                            <option selected>Lựa chọn</option>
+                                            <option value="/admin/productDESC">Giá từ cao đến thấp</option>
+                                            <option value="/admin/productASC">Giá từ thấp đến cao</option>
+                                            <option value="/admin/productSALE">Sản phẩm đang sale</option>
+                                        </select>
                                         <div style="width: 50%;"><a href="/admin/product/create"
                                                 style="text-decoration: none;"><i class="fa-solid fa-plus"></i> Thêm sản
                                                 phẩm mới</a></div>
                                         <form action="/admin/product" method="post"
                                             class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                                            <div class="input-group"
-                                                style="border: 1px solid black; border-radius: 6px ;">
+                                            <div class="input-group" style="border: 1px solid ; border-radius: 6px ;">
                                                 <input type="text" class="form-control bg-light border-0 small"
                                                     placeholder="nhập tên sản phẩm" aria-label="Search"
                                                     aria-describedby="basic-addon2" name="name" id="nameSearch" <%
@@ -66,6 +72,7 @@
                                                         <th style="width: 50%;">Tên sản phẩm</th>
                                                         <th style="text-align: center;">Giá(VNĐ)</th>
                                                         <th style="text-align: center;">Số lượng</th>
+                                                        <th style="text-align: center;">sale</th>
                                                         <th style="text-align: center; width: 10%;">Chỉnh sửa</th>
                                                         <th style="text-align: center; width: 10%;">Xóa sản phẩm</th>
 
@@ -84,6 +91,9 @@
                                                                 </td>
                                                                 <td style="text-align: center;">
                                                                     <%= prd.quantity %>
+                                                                </td>
+                                                                <td style="text-align: center;">
+                                                                    <%= prd.sale %>
                                                                 </td>
 
                                                                 <td style="text-align: center;">
@@ -120,11 +130,13 @@
                                             </table>
                                             <div id="pagination"
                                                 style="display: flex; justify-content: center; width: 100%;"></div>
-                                            <% if(typeof message !=='undefined' ){ %>
+                                            <% if(typeof products !=='undefined' && products.length<1 && typeof
+                                                nameSearch !=='undefined' ){ %>
                                                 <p style="width: 100%; text-align: center;">
-                                                    <%=message%>
+                                                    không có sản phẩm nào có tên: <%= nameSearch %>
                                                 </p>
                                                 <% } %>
+
                                         </div>
                                     </div>
 
@@ -219,7 +231,22 @@
                 const button = document.createElement("a");
                 const nameSearch = document.getElementById("nameSearch");
                 button.href = nameSearch.value != "" ? (`/admin/product/${nameSearch.value}/page/${i}`) : (`/admin/product/page/${i}`);
-
+                var currentURL = window.location.href;
+                if (currentURL.includes("DESC")) {
+                    button.href = `/admin/productDESC/page/${i}`;
+                    var selectElement = document.getElementById("selectprd");
+                    selectElement.selectedIndex = 1;
+                }
+                if (currentURL.includes("ASC")) {
+                    button.href = `/admin/productASC/page/${i}`;
+                    var selectElement = document.getElementById("selectprd");
+                    selectElement.selectedIndex = 2;
+                }
+                if (currentURL.includes("SALE")) {
+                    button.href = `/admin/productSALE/page/${i}`;
+                    var selectElement = document.getElementById("selectprd");
+                    selectElement.selectedIndex = 3;
+                }
                 button.textContent = i;
                 button.className = "page-link";
                 //button.addEventListener("click", function () {
@@ -231,6 +258,16 @@
 
 
         createPaginationButtons();
+        function redirectToUrl(selectElement) {
+            var selectedValue = selectElement.value;
+            if (selectedValue) {
+                if (selectedValue == "Lựa chọn") {
+                    window.location.href = window.location.href;
+                } else {
+                    window.location.href = selectedValue;
+                }
+            }
+        }
 
     </script>
 

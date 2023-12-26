@@ -53,6 +53,7 @@ def handleGetProductOrderTop():
             .join(models.Order, models.Order.id == models.OrderProduct.order_id)
             .filter(models.Order.status == 2)
             .group_by(models.OrderProduct.product_id)
+            .having(func.sum(models.OrderProduct.quantity) >= 2)
     )
     product_list=[]
     for item in order_products:

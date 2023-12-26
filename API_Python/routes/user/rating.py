@@ -9,7 +9,7 @@ class RateBase(BaseModel):
     product_id: int
     user_id : int
     order_id : int
-    star: int
+    star: str
     comment: str
     class Config:
         arbitrary_types_allowed = True
@@ -17,8 +17,8 @@ class RateBase(BaseModel):
 @router.post("/api/v1/rate",status_code=status.HTTP_201_CREATED)
 def handleRateOrder(rate: RateBase):
     try:
-        data_order = models.Rate(**rate.dict())
-        get_data = RateController.handleRate(data_order)
+        data_rate = models.Rate(**rate.dict())
+        get_data = RateController.handleRate(data_rate)
         print(get_data)
         return get_data
     except ValueError as e:

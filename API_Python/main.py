@@ -2,7 +2,7 @@ from fastapi import  FastAPI
 import models
 from database import engine
 from routes.user import auth
-from routes.admin import categories as admincategories, products , users, roles,  authadmin, order as adminOrder, admin
+from routes.admin import categories as admincategories, products , users, roles,  authadmin, order as adminOrder, admin, brand as adminbrand
 from routes.user import auth,web,order,rating,categories,brand
 
 app = FastAPI()
@@ -23,3 +23,4 @@ app.include_router(adminOrder.router)
 app.include_router(roles.router)
 app.include_router(admincategories.router)
 app.include_router(authadmin.router)
+app.include_router(adminbrand.router)

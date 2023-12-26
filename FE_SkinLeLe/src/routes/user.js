@@ -7,6 +7,9 @@ const store = require("../store/cart");
 const apiOrder = require("../api/user/apiOrder");
 const apiRate = require("../api/user/apiRate");
 const apiCategory = require("../api/user/apiCategory");
+const apiBrand = require("../api/user/apiBrand");
+const axios = require("axios");
+require("dotenv").config();
 
 router.get("/", apiProduct.getProductHome);
 router.get("/login", middleware.checkAuth);
@@ -30,7 +33,13 @@ router.get("/logout", (req, res) => {
 router.post("/register", apiAuth.handleRegister);
 
 router.get("/addCart/:id", store.handleAddCart);
-router.get("/viewCart", (req, res) => {
+router.get("/viewCart", async (req, res) => {
+  if (req.query.paymentId) {
+    req.session.cart = [];
+  }
+  if (req.query.cancel_check) {
+    await axios.get(process.env.BASE_URL + `cancelCheckOut`);
+  }
   let erro = req.flash("erro");
   let success = req.flash("success");
   let carts = req.session.cart;
@@ -90,9 +99,10 @@ router.get(
 
 router.get("/user/:id", middleware.checkRequireLogin, apiAuth.getUserLogin);
 router.get("/search", apiProduct.getProductSearch);
-//router.get("/search/:page", apiProduct.getProductSearchPage);
 
 router.get("/detail/:id", apiProduct.getProductDetail);
 router.get("/categories/skincare/:id", apiCategory.getCategorySkinCare);
 router.get("/categories/makeup/:id", apiCategory.getCategoryMakeUp);
+
+router.get("/brands/:brand_id", apiBrand.getProductBrand);
 module.exports = router;

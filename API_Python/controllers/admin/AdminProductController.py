@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from database import SessionLocal
 from models import Product 
 from datetime import datetime, timedelta,date
-from sqlalchemy import func
+from sqlalchemy import func, desc, asc
 import models
 
 def addProduct(product):
@@ -32,6 +32,10 @@ def addProduct(product):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng nhập sanh mục sản phẩm !"
             )
+        if not product.manufacture:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng nhập ngày hết sản xuất!"
+            )
         db.add(product)
         db.commit()
         db.refresh(product)
@@ -52,6 +56,65 @@ def getProducts(currentPage):
         offset = (currentPage - 1) * limit
         db = SessionLocal()
         products = db.query(Product).limit(limit).offset(offset).all()
+        return {
+            "success": True,
+            "message": "Tìm sản phẩm thành công!",
+            "products": products
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Tìm sản phẩm thất bại!",
+            "err": str(e)
+        }
+def getProductsSale(currentPage):
+    try:
+        limit = 6
+        offset = (currentPage - 1) * limit
+        db = SessionLocal()
+        products = db.query(Product).filter(Product.sale > 0).limit(limit).offset(offset).all()
+        sale_count = db.query(func.count(Product.id)).filter(Product.sale > 0).scalar()
+        return {
+            "success": True,
+            "message": "Tìm sản phẩm thành công!",
+            "products": products,
+            "sale_count": sale_count
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Tìm sản phẩm thất bại!",
+            "err": str(e)
+        }
+def getProductsDESC(currentPage):
+    try:
+        limit = 6
+        offset = (currentPage - 1) * limit
+        db = SessionLocal()
+
+        # Add order_by clause to sort products by price in descending order
+        products = db.query(Product).order_by(desc(Product.price)).limit(limit).offset(offset).all()
+
+        return {
+            "success": True,
+            "message": "Tìm sản phẩm thành công!",
+            "products": products
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Tìm sản phẩm thất bại!",
+            "err": str(e)
+        }
+def getProductsASC(currentPage):
+    try:
+        limit = 6
+        offset = (currentPage - 1) * limit
+        db = SessionLocal()
+
+        # Add order_by clause to sort products by price in descending order
+        products = db.query(Product).order_by(asc(Product.price)).limit(limit).offset(offset).all()
+
         return {
             "success": True,
             "message": "Tìm sản phẩm thành công!",
@@ -158,6 +221,14 @@ def updateProduct(product_id, product_data):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng nhập sanh mục sản phẩm !"
             )
+        if not product_data.manufacture:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng nhập ngày sản xuất !"
+            )
+        if not product_data.brand_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng nhập brand_id !"
+            )
         product.name = product_data.name
         if product_data.image:
             product.image = product_data.image
@@ -165,6 +236,10 @@ def updateProduct(product_id, product_data):
         product.description = product_data.description
         product.quantity = product_data.quantity
         product.category_id = product_data.category_id
+        product.manufacture = product_data.manufacture
+        product.brand_id = product_data.brand_id
+        product.sale = product_data.sale
+        
         db.commit()
         db.refresh(product)
         return {

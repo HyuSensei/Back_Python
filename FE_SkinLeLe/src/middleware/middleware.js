@@ -1,6 +1,8 @@
 const apiAuth = require("../api/user/apiAuth");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const apiCategory = require("../api/user/apiCategory");
+const apiBrand = require("../api/user/apiBrand");
 
 const checkAuth = async (req, res) => {
   let cookie = req.cookies;
@@ -84,8 +86,24 @@ const verifyToken = (token) => {
   }
   return data;
 };
+
+const getAllCategory = async (req, res, next) => {
+  let data = await apiCategory.getCategory();
+  res.locals.category1 = data.category_skincare;
+  res.locals.category2 = data.category_makeup;
+  next();
+};
+
+const getAllBrand = async (req, res, next) => {
+  let data = await apiBrand.getBrand();
+  res.locals.brands = data.brands;
+  next();
+};
+
 module.exports = {
   checkAuth,
   checkRequireLogin,
   checkPremission,
+  getAllCategory,
+  getAllBrand,
 };

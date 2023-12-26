@@ -81,6 +81,15 @@
                                                                 <input type="text" id="quantity" class="form-control"
                                                                     placeholder="Nhập số lượng sản phẩm" value=""
                                                                     name="quantity">
+                                                                <label for="date_of_manufacture">NSX</label>
+                                                                <input type="date" id="date_of_manufacture"
+                                                                    class="form-control"
+                                                                    placeholder="Nhập ngày sản xuất" value=""
+                                                                    name="manufacture">
+                                                                <input type="hidden" value="0" name="sale">
+                                                                <label for="date_of_manufacture">HSD(năm)</label>
+                                                                <input type="text" class="form-control" value=""
+                                                                    name="expiry">
                                                                 <label for="Category">Danh mục sản phẩm</label>
                                                                 <select class="form-control" id="category"
                                                                     name="category_id">
@@ -90,6 +99,21 @@
                                                                         </option>
                                                                         <% categories.forEach(function(item, index,
                                                                             array) { %>
+                                                                            <option value="<%= item.id %>">
+                                                                                <%= item.name %>
+                                                                            </option>
+                                                                            <% }) %>
+                                                                                <% } %>
+                                                                </select>
+                                                                <label for="brands">Danh brands</label>
+                                                                <select class="form-control" id="brands"
+                                                                    name="brand_id">
+                                                                    <% if(typeof brand !='undefined' ){ %>
+                                                                        <option value="0">
+                                                                            chọn brand
+                                                                        </option>
+                                                                        <% brand.forEach(function(item, index, array) {
+                                                                            %>
                                                                             <option value="<%= item.id %>">
                                                                                 <%= item.name %>
                                                                             </option>

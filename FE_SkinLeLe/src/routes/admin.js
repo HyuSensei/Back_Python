@@ -27,9 +27,39 @@ router.get(
   apiProduct.getProductHome2
 );
 router.get(
+  "/admin/productDESC",
+  middleware.checkPremission,
+  apiProduct.getProductHomeDESC
+);
+router.get(
+  "/admin/productASC",
+  middleware.checkPremission,
+  apiProduct.getProductHomeASC
+);
+router.get(
+  "/admin/productSALE",
+  middleware.checkPremission,
+  apiProduct.getProductHomeSALE
+);
+router.get(
   "/admin/product/page/:currentPage",
   middleware.checkPremission,
   apiProduct.getProductHome
+);
+router.get(
+  "/admin/productASC/page/:currentPage",
+  middleware.checkPremission,
+  apiProduct.getProductHomeASCpage
+);
+router.get(
+  "/admin/productDESC/page/:currentPage",
+  middleware.checkPremission,
+  apiProduct.getProductHomeDESCpage
+);
+router.get(
+  "/admin/productSALE/page/:currentPage",
+  middleware.checkPremission,
+  apiProduct.getProductHomeSALEpage
 );
 router.get(
   "/admin/product/edit/:id",

@@ -20,9 +20,10 @@ def addOrder(data_order):
             status_code= status.HTTP_400_BAD_REQUEST, detail="Vui lòng chọn phương thức thanh toán !"
         )
     if data_user["method"]=="off":
+        print(data_order["cart"])
         total=0
         for i in range(len(data_cart)):
-            total = data_cart[i]["price"] * data_cart[i]["quantity"]
+            total += data_cart[i]["price"] * data_cart[i]["quantity"]
         order_info = models.Order(
         payment="Thanh toán khi nhận hàng",
         status=0,
@@ -41,8 +42,8 @@ def addOrder(data_order):
             product_id= data_cart[i]["id"],
             quantity= data_cart[i]["quantity"]
         )
-        db.add(order_product)
-        db.commit()
+            db.add(order_product)
+            db.commit()
         return {
             "success": True,
             "message": "Đặt hàng thành công !",
@@ -321,9 +322,9 @@ def handleCancelOrder(order_id):
         "message":"Hủy đơn hàng thành công !"
     }
 
-def checkRateProduct(order_id,user_id):
+def checkRateProduct(order_id,product_id):
     db=SessionLocal()
-    get_rate= db.query(models.Rate).filter(models.Rate.user_id==user_id).filter(models.Rate.order_id==order_id).all()
+    get_rate= db.query(models.Rate).filter(models.Rate.product_id==product_id).filter(models.Rate.order_id==order_id).all()
     return get_rate    
     
 def handleOrderRate(user_id,order_id):
@@ -356,20 +357,13 @@ def handleOrderRate(user_id,order_id):
             "product_name": product.name,
             "product_image": product.image  
         }
-        count_rate_product = db.query(func.count(distinct(models.Rate.product_id))).filter(models.Rate.order_id==order.id).all()
-        count_order_product = db.query(func.count(distinct(models.OrderProduct.product_id))).filter(models.OrderProduct.order_id==order.id).all()
-        for count_rate, count_product in zip(count_rate_product, count_order_product):
-            count_result = {
-                "order_id": order.id,
-                "count_order_product": count_product[0],
-                "count_rate_product": count_rate[0]
-            }
-            count_check.append(count_result)
-        data_rate_order=checkRateProduct(order.id,order.user_id)
+        
+        data_rate_order=checkRateProduct(order.id,order_product.product_id)
         if len(data_rate_order)>0:
             for rate in data_rate_order:
                 get_rate_order={
                     "id": rate.id,
+                    "order_id":rate.order_id,
                     "product_id": rate.product_id,
                     "user_id": rate.user_id,
                     "star": rate.star,
@@ -377,9 +371,25 @@ def handleOrderRate(user_id,order_id):
                 }
             list_data_rate.append(get_rate_order)    
         list_data_order.append(get_order)
+    count_rate_product = db.query(func.count(distinct(models.Rate.product_id))).filter(models.Rate.order_id==order_id).first()
+    count_order_product = db.query(func.count(distinct(models.OrderProduct.product_id))).filter(models.OrderProduct.order_id==order_id).first()
+        # print(count_rate_product[0])
+        # for count_rate, count_product in zip(count_rate_product, count_order_product):
+        #     count_result = {
+        #         "order_id": order.id,
+        #         "count_order_product": count_product[0],
+        #         "count_rate_product": count_rate[0]
+        #     }
+    count_result = {
+                "order_id": order.id,
+                "count_order_product": count_rate_product[0],
+                "count_rate_product": count_order_product[0]
+            }
+    count_check.append(count_result)
     return {
         "success":True,
         "order": list_data_order,
-        "get_rate": list_data_rate
+        "get_rate": list_data_rate,
+        "count_check":count_check
     }
     

@@ -3,7 +3,7 @@ from controllers.admin import AdminProductController
 import models
 from database import SessionLocal
 from pydantic import BaseModel
-
+from datetime import date
 router=APIRouter()
 
 class ProductsBase(BaseModel):
@@ -13,6 +13,10 @@ class ProductsBase(BaseModel):
     description: str
     quantity: int
     category_id: int
+    manufacture: date
+    expiry: float
+    sale: int
+    brand_id: int
 
 class ProductSale(BaseModel):
     manufacture: str
@@ -33,6 +37,33 @@ async def addProducts(product: ProductsBase):
 async def getProduct(currentPage : int = Path(..., title="page", ge=1)):
     try:
         db_product  = AdminProductController.getProducts(currentPage)
+        return db_product
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+@router.get("/api/v1/prodouctdesc/limit/{currentPage}",status_code=status.HTTP_200_OK)
+async def getProductDESC(currentPage : int = Path(..., title="page", ge=1)):
+    try:
+        db_product  = AdminProductController.getProductsDESC(currentPage)
+        return db_product
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+@router.get("/api/v1/prodouctasc/limit/{currentPage}",status_code=status.HTTP_200_OK)
+async def getProductDESC(currentPage : int = Path(..., title="page", ge=1)):
+    try:
+        db_product  = AdminProductController.getProductsASC(currentPage)
+        return db_product
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+@router.get("/api/v1/prodouctsale/limit/{currentPage}",status_code=status.HTTP_200_OK)
+async def getProductSale(currentPage : int = Path(..., title="page", ge=1)):
+    try:
+        db_product  = AdminProductController.getProductsSale(currentPage)
         return db_product
     except ValueError as e:
         raise HTTPException(

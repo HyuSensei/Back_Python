@@ -34,6 +34,14 @@ const getProductDetailCart = async (id) => {
 const getProductSearch = async (req, res) => {
   try {
     const product_name = req.query.product_name;
+    if (!product_name) {
+      return res.render("user/search.ejs", {
+        products: [],
+        total_page: 0,
+        product_name: "",
+        current_page: 1,
+      });
+    }
     const url = process.env.BASE_URL + `products/search/${product_name}`;
     const page = req.query.page || 1;
     const params = {

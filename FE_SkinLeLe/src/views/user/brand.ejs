@@ -20,7 +20,7 @@
                             <div class="col-lg-12">
                                 <div class="breadcrumb__links">
                                     <a href="/"><i class="fa fa-home"></i> Trang Chủ</a>
-                                    <span>Danh Mục Sản Phẩm</span>
+                                    <span>Danh Mục Thương Hiệu</span>
                                 </div>
                             </div>
                         </div>
@@ -31,21 +31,10 @@
                         <div class="col-md-3">
                             <!-- Sidebar danh mục sản phẩm -->
                             <div class="sidebar">
-                                <h5>Danh mục</h5>
-                                <h4 style="font-weight: bold;margin-top: 10px;margin-bottom: 20px;">Chăm Sóc Da</h4>
-                                <% category_skincare.forEach(function(item){ %>
+                                <h4 style="margin-bottom: 20px;font-weight: bold;">THƯƠNG HIỆU</h4>
+                                <% brands.forEach(function(item){ %>
                                     <ul class="list-group">
-                                        <li class="list-group-item"><a href="/categories/skincare/<%= item.id %>">
-                                                <%= item.name %>
-                                            </a></li>
-                                    </ul>
-                                    <% }); %>
-                            </div>
-                            <div class="sidebar">
-                                <h4 style="font-weight: bold;margin-top: 10px;margin-bottom: 20px;">Trang Điểm</h4>
-                                <% category_makeup.forEach(function(item){ %>
-                                    <ul class="list-group">
-                                        <li class="list-group-item"><a href="/categories/makeup/<%= item.id %>">
+                                        <li class="list-group-item"><a href="/brands/<%= item.id %>">
                                                 <%= item.name %>
                                             </a></li>
                                     </ul>
@@ -55,8 +44,7 @@
                         <div class="col-md-9">
                             <div class="container">
                                 <div>
-                                    <img src="https://file.hstatic.net/1000006063/collection/makeup_trendy_ef942aa7ddcc473e83e1f5fabed4c5cf.png"
-                                        style="width: 100%;" alt="">
+                                    <img src="/images/brand.png" style="width: 100%;" alt="">
                                 </div>
                                 <div style="margin-top: 50px;" class="row" id="show_product">
                                     <% products.forEach(function(product){ %>
@@ -108,12 +96,12 @@
                                     <% for (let i=1; i <=total_page; i++) { %>
                                         <% if (i===current_page) { %>
                                             <li class="page-item active"><a class="page-link"
-                                                    href="/categories/makeup/<%= category_id %>?page=<%= i %>">
+                                                    href="/brands/<%= brand_id %>?page=<%= i %>">
                                                     <%= i %>
                                                 </a></li>
                                             <% } else { %>
                                                 <li class="page-item"><a class="page-link"
-                                                        href="/categories/makeup/<%= category_id %>?page=<%= i %>">
+                                                        href="/brands/<%= brand_id %>?page=<%= i %>">
                                                         <%= i %>
                                                     </a></li>
                                                 <% } %>

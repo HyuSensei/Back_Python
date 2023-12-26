@@ -87,10 +87,16 @@
                                                 margin-top: 10px;" href="">
                                                             <%= product.name %>
                                                         </a></h6>
-                                                    <div class="product__price">
-                                                        <% product.price=product.price.toLocaleString('vi-VN') %>
-                                                            <%= product.price %> đ
-                                                    </div>
+                                                    <% if(product.sale>0) {
+                                                        price = (100-product.sale)*product.price /100
+                                                        } else
+                                                        {
+                                                        price = product.price %>
+                                                        <% } %>
+                                                            <div class="product__price">
+                                                                <% price=price.toLocaleString('vi-VN') %>
+                                                                    <%= price %> đ
+                                                            </div>
                                                 </div>
                                             </div>
                                         </div>
