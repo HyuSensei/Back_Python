@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Text
 from sqlalchemy.orm import relationship, backref
-from database import Base
+from database import Base, SessionLocal
 from datetime import datetime
+import bcrypt
 
 class User(Base):
     __tablename__ = 'users'
@@ -101,3 +102,16 @@ class Brand(Base):
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
 
+with SessionLocal() as session:
+    admin_user = session.query(User).filter_by(username='admin').first()
+    if not admin_user:
+        hashed_password = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt())
+        admin_user = User(
+            name='Admin',
+            email='admin@gmail.com',
+            username='admin',
+            password=hashed_password.decode('utf-8'),
+            role_id=admin_role.id
+        )
+        session.add(admin_user)
+        session.commit()
